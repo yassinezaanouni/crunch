@@ -157,6 +157,13 @@ final class AppState {
         }
     }
 
+    /// Go back to queue view keeping existing results, ready to add more images
+    func addMoreFromResults() {
+        withAnimation(.spring(response: 0.3, dampingFraction: 0.85)) {
+            showResults = false
+        }
+    }
+
     func convertAll() {
         isConverting = true
         let format = outputFormat
@@ -165,6 +172,9 @@ final class AppState {
 
         Task {
             for i in items.indices {
+                // Skip already converted items
+                guard items[i].status == .queued else { continue }
+
                 await MainActor.run {
                     items[i].status = .converting
                 }

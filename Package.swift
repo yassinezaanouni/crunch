@@ -10,7 +10,7 @@ let package = Package(
         .executableTarget(
             name: "Crunch",
             path: ".",
-            exclude: ["Package.swift", "screenshots"],
+            exclude: ["Package.swift", "screenshots", "LICENSE", "README.md"],
             swiftSettings: [
                 .unsafeFlags(["-parse-as-library"])
             ]

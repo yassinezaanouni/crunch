@@ -81,8 +81,19 @@ struct ResultsView: View {
 
             Spacer()
 
-            // Balance spacer
-            Text("Back").font(.system(size: 12)).hidden()
+            Button {
+                appState.addMoreFromResults()
+            } label: {
+                HStack(spacing: 4) {
+                    Image(systemName: "plus")
+                        .font(.system(size: 10, weight: .bold))
+                    Text("Add")
+                        .font(.system(size: 12, weight: .medium))
+                }
+                .foregroundStyle(Theme.primary)
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 10)

@@ -1,4 +1,5 @@
 import SwiftUI
+import UniformTypeIdentifiers
 
 struct ImageQueueView: View {
     @Environment(AppState.self) private var appState
@@ -15,6 +16,23 @@ struct ImageQueueView: View {
                         Divider().padding(.leading, 56)
                     }
                 }
+
+                // Add more button
+                Button {
+                    openFilePicker()
+                } label: {
+                    HStack(spacing: 6) {
+                        Image(systemName: "plus.circle")
+                            .font(.system(size: 13, weight: .medium))
+                        Text("Add more images")
+                            .font(.system(size: 12, weight: .medium))
+                    }
+                    .foregroundStyle(Theme.primary)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 10)
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
             }
             .padding(.vertical, 4)
         }
@@ -33,6 +51,20 @@ struct ImageQueueView: View {
                 }
             }
             return true
+        }
+    }
+
+    private func openFilePicker() {
+        let panel = NSOpenPanel()
+        panel.allowsMultipleSelection = true
+        panel.canChooseDirectories = false
+        panel.allowedContentTypes = [.image, .png, .jpeg, .heic, .tiff, .bmp, .gif, .webP]
+        panel.title = "Select Images"
+        panel.level = .floating
+        panel.begin { response in
+            if response == .OK {
+                appState.addImages(from: panel.urls)
+            }
         }
     }
 }
