@@ -38,34 +38,26 @@ struct ContentView: View {
         }
     }
 
+    @ViewBuilder
     private var header: some View {
-        HStack(spacing: 10) {
-            if appState.hasItems {
-                // Back button when images are queued
+        if appState.hasItems {
+            PageHeader(
+                title: "\(appState.items.count) image\(appState.items.count == 1 ? "" : "s")",
+                onBack: { appState.clearAll() }
+            ) {
                 Button {
-                    appState.clearAll()
+                    appState.showSettings = true
                 } label: {
-                    HStack(spacing: 4) {
-                        Image(systemName: "chevron.left")
-                            .font(.system(size: 11, weight: .semibold))
-                        Text("Back")
-                            .font(.system(size: 12, weight: .medium))
-                    }
-                    .foregroundStyle(Theme.primary)
-                    .contentShape(Rectangle())
+                    Image(systemName: "gearshape")
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundStyle(Theme.mutedForeground)
+                        .frame(width: 28, height: 28)
+                        .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
-
-                Spacer()
-
-                Text("\(appState.items.count) image\(appState.items.count == 1 ? "" : "s")")
-                    .font(.system(size: 14, weight: .semibold, design: .rounded))
-                    .foregroundStyle(Theme.foreground)
-
-                Spacer()
-
-            } else {
-                // App branding on empty state
+            }
+        } else {
+            HStack(spacing: 10) {
                 ZStack {
                     RoundedRectangle(cornerRadius: 8)
                         .fill(
@@ -90,20 +82,20 @@ struct ContentView: View {
                 }
 
                 Spacer()
-            }
 
-            Button {
-                appState.showSettings = true
-            } label: {
-                Image(systemName: "gearshape")
-                    .font(.system(size: 14, weight: .medium))
-                    .foregroundStyle(Theme.mutedForeground)
-                    .frame(width: 28, height: 28)
-                    .contentShape(Rectangle())
+                Button {
+                    appState.showSettings = true
+                } label: {
+                    Image(systemName: "gearshape")
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundStyle(Theme.mutedForeground)
+                        .frame(width: 28, height: 28)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
             }
-            .buttonStyle(.plain)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 10)
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 10)
     }
 }

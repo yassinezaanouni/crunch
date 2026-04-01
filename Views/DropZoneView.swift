@@ -81,19 +81,7 @@ struct DropZoneView: View {
     }
 
     private func openFilePicker() {
-        let panel = NSOpenPanel()
-        panel.allowsMultipleSelection = true
-        panel.canChooseDirectories = false
-        panel.allowedContentTypes = [.image, .png, .jpeg, .heic, .tiff, .bmp, .gif, .webP]
-        panel.title = "Select Images"
-
-        // Show as sheet-like floating panel above the menu bar window
-        panel.level = .floating
-        panel.begin { response in
-            if response == .OK {
-                appState.addImages(from: panel.urls)
-            }
-        }
+        openImagePicker { appState.addImages(from: $0) }
     }
 
     private func handleDrop(_ providers: [NSItemProvider]) {

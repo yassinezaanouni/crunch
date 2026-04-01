@@ -1,5 +1,4 @@
 import SwiftUI
-import UniformTypeIdentifiers
 
 struct ImageQueueView: View {
     @Environment(AppState.self) private var appState
@@ -17,10 +16,10 @@ struct ImageQueueView: View {
                     }
                 }
 
-                // Mini drop zone
-                MiniDropZone {
-                    openFilePicker()
-                }
+                MiniDropZone(
+                    onTap: { openImagePicker { appState.addImages(from: $0) } },
+                    onDrop: { appState.addImages(from: $0) }
+                )
             }
             .padding(.vertical, 4)
         }
@@ -41,20 +40,6 @@ struct ImageQueueView: View {
             return true
         }
     }
-
-    private func openFilePicker() {
-        let panel = NSOpenPanel()
-        panel.allowsMultipleSelection = true
-        panel.canChooseDirectories = false
-        panel.allowedContentTypes = [.image, .png, .jpeg, .heic, .tiff, .bmp, .gif, .webP]
-        panel.title = "Select Images"
-        panel.level = .floating
-        panel.begin { response in
-            if response == .OK {
-                appState.addImages(from: panel.urls)
-            }
-        }
-    }
 }
 
 private struct ImageQueueRow: View {
@@ -65,7 +50,6 @@ private struct ImageQueueRow: View {
 
     var body: some View {
         HStack(spacing: 10) {
-            // Thumbnail
             Image(nsImage: item.image)
                 .resizable()
                 .aspectRatio(contentMode: .fill)
@@ -96,7 +80,6 @@ private struct ImageQueueRow: View {
 
             Spacer()
 
-            // Status indicator
             switch item.status {
             case .queued:
                 if isHovered {
@@ -140,69 +123,4 @@ private struct ImageQueueRow: View {
         .onHover { isHovered = $0 }
         .animation(.easeOut(duration: 0.15), value: isHovered)
     }
-}
-
-// MARK: - Mini Drop Zone
-
-private struct MiniDropZone: View {
-    let onTap: () -> Void
-
-    @State private var isHovering = false
-    @State private var dashPhase: CGFloat = 0
-    @Environment(AppState.self) private var appState
-
-    var body: some View {
-        HStack(spacing: 8) {
-            Image(systemName: "plus")
-                .font(.system(size: 12, weight: .semibold))
-                .foregroundStyle(Theme.primary)
-            Text("Drop or click to add more")
-                .font(.system(size: 11, weight: .medium))
-                .foregroundStyle(Theme.mutedForeground)
-        }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 14)
-        .background(
-            RoundedRectangle(cornerRadius: 10)
-                .strokeBorder(
-                    Theme.primary.opacity(isHovering ? 0.8 : 0.3),
-                    style: StrokeStyle(lineWidth: 1.2, dash: [6, 4], dashPhase: dashPhase)
-                )
-                .background(
-                    RoundedRectangle(cornerRadius: 10)
-                        .fill(isHovering ? Theme.accent : .clear)
-                )
-        )
-        .contentShape(RoundedRectangle(cornerRadius: 10))
-        .onTapGesture { onTap() }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 8)
-        .onAppear {
-            withAnimation(.linear(duration: 10).repeatForever(autoreverses: false)) {
-                dashPhase = 40
-            }
-        }
-        .onDrop(of: [.fileURL], isTargeted: $isHovering) { providers in
-            for provider in providers {
-                provider.loadItem(forTypeIdentifier: "public.file-url", options: nil) { data, _ in
-                    guard let data = data as? Data,
-                          let urlString = String(data: data, encoding: .utf8),
-                          let url = URL(string: urlString) else { return }
-                    let imageExtensions = ["png", "jpg", "jpeg", "heic", "heif", "tiff", "tif", "bmp", "gif", "webp"]
-                    guard imageExtensions.contains(url.pathExtension.lowercased()) else { return }
-                    DispatchQueue.main.async {
-                        appState.addImages(from: [url])
-                    }
-                }
-            }
-            return true
-        }
-        .animation(.easeOut(duration: 0.15), value: isHovering)
-    }
-}
-
-func formatBytes(_ bytes: Int64) -> String {
-    let formatter = ByteCountFormatter()
-    formatter.countStyle = .file
-    return formatter.string(fromByteCount: bytes)
 }

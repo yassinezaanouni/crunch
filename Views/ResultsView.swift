@@ -55,32 +55,15 @@ struct ResultsView: View {
     }
 
     private var resultsHeader: some View {
-        HStack {
-            Button {
+        PageHeader(
+            title: "Results",
+            onBack: {
                 withAnimation(.spring(response: 0.3, dampingFraction: 0.85)) {
                     appState.showResults = false
                     appState.items.removeAll()
                 }
-            } label: {
-                HStack(spacing: 4) {
-                    Image(systemName: "chevron.left")
-                        .font(.system(size: 11, weight: .semibold))
-                    Text("Back")
-                        .font(.system(size: 12, weight: .medium))
-                }
-                .foregroundStyle(Theme.primary)
-                .contentShape(Rectangle())
             }
-            .buttonStyle(.plain)
-
-            Spacer()
-
-            Text("Results")
-                .font(.system(size: 14, weight: .semibold, design: .rounded))
-                .foregroundStyle(Theme.foreground)
-
-            Spacer()
-
+        ) {
             Button {
                 appState.addMoreFromResults()
             } label: {
@@ -95,8 +78,6 @@ struct ResultsView: View {
             }
             .buttonStyle(.plain)
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 10)
     }
 
     private var summaryBar: some View {

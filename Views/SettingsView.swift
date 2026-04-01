@@ -25,33 +25,7 @@ struct SettingsView: View {
     }
 
     private var settingsHeader: some View {
-        HStack {
-            Button {
-                appState.showSettings = false
-            } label: {
-                HStack(spacing: 4) {
-                    Image(systemName: "chevron.left")
-                        .font(.system(size: 11, weight: .semibold))
-                    Text("Back")
-                        .font(.system(size: 12, weight: .medium))
-                }
-                .foregroundStyle(Theme.primary)
-                .contentShape(Rectangle())
-            }
-            .buttonStyle(.plain)
-
-            Spacer()
-
-            Text("Settings")
-                .font(.system(size: 14, weight: .semibold, design: .rounded))
-                .foregroundStyle(Theme.foreground)
-
-            Spacer()
-
-            Text("Back").font(.system(size: 12)).hidden()
-        }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 10)
+        PageHeader(title: "Settings", onBack: { appState.showSettings = false })
     }
 
     // MARK: - Sections
